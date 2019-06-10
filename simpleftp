@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+from ftplib import FTP
+from pyfiglet import figlet_format
+import sys, getpass
+
+print(figlet_format("Simple FTP Client", "cybermedium"))
+
+# get credentials from user
+hostname = input("Enter the host: ")
+username = input("Enter the username: ")
+password = getpass.getpass("Enter the password: ")
+
+# attempt to connect and login
+try:
+    ftp = FTP(hostname)
+    ftp.login(username, password)
+except:
+    sys.exit("Could not login. Please try again.")
+
+print(figlet_format("Success!"))
+print("Logged into %s as %s." % (hostname, username))
+
+while True:
+    print("Available commands:")
+    print("\tls\t\t\t\tlist current directory")
+    print("\tcd <DIR>\t\t\tchange current directory to <DIR>")
+    print("\tmv <FILE> <NEW>\t\t\trename <FILE> to <NEW>")
+    print("\trm <FILE>\t\t\tdelete <FILE>")
+    print("\tmkdir <DIR>\t\t\tmake a new directory of name <DIR>")
+    print("\trmdir <DIR>\t\t\tremove directory of name <DIR>")
+    print("\tpwd\t\t\t\tprint pathname of current directory")
+    print("\tq\t\t\t\tquit Simple FTP")
+
+    action = input("Enter command: ")
+    # get first lowercase letter
+    command = action.split()[0].lower()
+
+    # list current directory
+    if command == 'ls':
+        ftp.dir()
+    # change current directory
+    elif command == 'cd':
+        try:
+            directory = action.split()[1]
+            ftp.cwd(directory)
+        except:
+            print("Please enter a valid directory.")
+    # rename file
+    elif command == 'mv':
+        try:
+            oldfile = action.split()[1]
+            newfile = action.split()[2]
+            print("Are you sure you want to rename `%s` to `%s` (y/n)? " % (oldfile, newfile), end='')
+            response = input()[0].lower()
+            if response == 'y':
+                ftp.rename(oldfile, newfile)
+        except:
+            print("Please enter a valid current filename and a new filename.")
+    # remove file
+    elif command == 'rm':
+        try:
+            dfile = action.split()[1]
+            print("Are you sure you want to delete `%s` (y/n)? " % (dfile), end='')
+            response = input()[0].lower()
+            if response == 'y':
+                ftp.delete(dfile)
+        except:
+            print("Please enter a valid file to delete.")
+    # make a new directory
+    elif command == 'mkdir':
+        try:
+            directory = action.split()[1]
+            ftp.mkd(directory)
+        except:
+            print("Please enter a new directory name to create.")
+    # remove directory
+    elif command == 'rmdir':
+        try:
+            directory = action.split()[1]
+            print("Are you sure you want to remove %s? (y/n) " % (directory), end='')
+            response = input()[0].lower()
+            if response == 'y':
+                ftp.rmd(directory)
+        except:
+            print("Please enter a valid directory name to remove.")
+    # print current pathname
+    elif command == 'pwd':
+        print(ftp.pwd())
+    # close connection and quit
+    elif command == 'q':
+        ftp.quit()
+        sys.exit(figlet_format("Goodbye!", "cybermedium"))
+    else:
+        print("Invalid command.")
