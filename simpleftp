@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+
 from ftplib import FTP
 from pyfiglet import figlet_format
 import sys, getpass
 
-print(figlet_format("Simple FTP Client", "cybermedium"))
+print(figlet_format("SimpleFTP", "larry3d"))
 
 # get credentials from user
 hostname = input("Enter the host: ")
